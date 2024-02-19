@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  redispocapi:
+    image: redispocapi
+    container_name: RedisPocApi
+    build:
+      context: ./RedisPoc
+      dockerfile: Dockerfile
+    ports:
+      - '8080:8080'
+    depends_on:
+      - sqlserver
+      - rediscache
+    environment:
+      - DefaultConnection=Server=sqlserver,1433;Database=RedisPoc;User=sa;Password=Jko3va-D9821jhsvGD;TrustServerCertificate=true
+      - Redis=rediscache:6379
+
+  sqlserver:
+    image: 'mcr.microsoft.com/mssql/server:2022-latest'
+    container_name: SQLServer
+    ports:
+      - '1433:1433'
+    environment:
+      - SA_PASSWORD=Jko3va-D9821jhsvGD
+      - MSSQL_SA_PASSWORD=Jko3va-D9821jhsvGD
+      - ACCEPT_EULA=Y
+      - DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+
+  rediscache:
+    image: redis:latest
+    container_name: RedisCache
+    restart: always
+    ports:
+      - '6379:6379'
+    environment:
+      - REDIS_PASSWORD=Jko3va-D9821jhsvGD
+      - REDIS_PORT=6379
+      - REDIS_DATABASES=1
